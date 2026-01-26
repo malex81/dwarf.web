@@ -1,11 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
-  </PropertyGroup>
-	
+	<PropertyGroup>
+	</PropertyGroup>
+
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.8" />
+		<!-- Это добавит все веб-функции без захламления списка NuGet-пакетов -->
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	</ItemGroup>
-	
+
+	<ItemGroup>
+	</ItemGroup>
+
 </Project>

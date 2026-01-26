@@ -1,0 +1,10 @@
+<Project>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<NuGetAuditMode>direct</NuGetAuditMode>
+		<!--https://learn.microsoft.com/en-us/dotnet/core/tools/sdk-errors/netsdk1206-->
+		<!--<UseRidGraph>true</UseRidGraph>-->
+	</PropertyGroup>
+</Project>
