@@ -1,8 +1,33 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+	ViewData["Title"] = "Main";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@*
+	<div class="text-center">
+		<h1 class="display-4">Welcome</h1>
+		<p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+	</div>
+*@
+<main id="v-app-root" v-cloak>
+	<div>TEST 1</div>
+	<indicator />
+</main>
+
+<script type="module">
+	//import 'bootstrap';
+	import { createApp, ref } from 'vue'
+	import commonDirectivesPlugin from 'mbase/common-directives-plugin.mjs'
+
+	import indicator from 'mvue-blocks/indicator.mjs'
+
+	const app = createApp({
+		setup() {
+			return {}
+		},
+		components: {
+			indicator
+		}
+	});
+	app.use(commonDirectivesPlugin);
+	app.mount('#v-app-root');
+</script>

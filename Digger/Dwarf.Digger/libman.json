@@ -1,31 +1,37 @@
 {
-	"version": "3.0",
-	"defaultProvider": "cdnjs",
-	"libraries": [
-		{
-			"provider": "cdnjs",
-			"library": "bootstrap@5.3.8",
-			"destination": "wwwroot/lib/bootstrap/",
-			"files": [
-				"js/bootstrap.esm.js.map",
-				"js/bootstrap.esm.js",
-				"js/bootstrap.esm.min.js",
-				"js/bootstrap.esm.min.js.map",
-				"css/bootstrap.css",
-				"css/bootstrap.css.map",
-				"css/bootstrap.min.css"
-			]
-		},
-		{
-			"provider": "cdnjs",
-			"library": "popper.js@2.11.8",
-			"destination": "wwwroot/lib/popper.js/",
-			"files": [
-				"umd/popper.min.js",
-				"umd/popper.js.map",
-				"umd/popper.js",
-				"umd/popper.min.js.map"
-			]
-		}
-	]
+  "version": "3.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "bootstrap@5.3.8",
+      "destination": "wwwroot/lib/bootstrap/",
+      "files": [
+        "js/bootstrap.esm.js.map",
+        "js/bootstrap.esm.js",
+        "js/bootstrap.esm.min.js",
+        "js/bootstrap.esm.min.js.map",
+        "css/bootstrap.css",
+        "css/bootstrap.css.map",
+        "css/bootstrap.min.css"
+      ]
+    },
+    {
+      "library": "popper.js@2.11.8",
+      "destination": "wwwroot/lib/popper.js/",
+      "files": [
+        "umd/popper.min.js",
+        "umd/popper.js.map",
+        "umd/popper.js",
+        "umd/popper.min.js.map"
+      ]
+    },
+    {
+      "library": "vue@3.5.22",
+      "destination": "wwwroot/lib/vue/",
+      "files": [
+        "vue.esm-browser.prod.js",
+        "vue.esm-browser.prod.min.js"
+      ]
+    }
+  ]
 }
