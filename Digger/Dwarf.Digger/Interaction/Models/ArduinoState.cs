@@ -2,4 +2,4 @@
 
 record ArduinoPinState(string Name, int Value, bool IsAnalog = false);
 
-record ArduinoState(ArduinoPinState[] PinStates);
+record ArduinoState(bool Connected, ArduinoPinState[] PinStates);

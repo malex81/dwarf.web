@@ -1,0 +1,9 @@
+﻿<div>
+	<h1 class="display-5">Пины ардуино</h1>
+	<!-- https://getbootstrap.com/docs/5.3/components/list-group/ -->
+	<ul class="list-group">
+		<li class="list-group-item" v-for="pin in pinStates">
+			{{pin.name}} : {{pin.value}}
+		</li>
+	</ul>
+</div>

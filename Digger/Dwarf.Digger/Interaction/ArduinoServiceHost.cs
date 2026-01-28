@@ -10,6 +10,7 @@ internal sealed class ArduinoServiceHost : IHostedService
 	private readonly IHubContext<ArduinoHub> ardHubContext;
 	private readonly ILogger<ArduinoServiceHost> logger;
 	private Task? serviceTask;
+	private ArduinoClient? arduinoClient;
 
 	public ArduinoServiceHost(IHubContext<ArduinoHub> ardHubContext, ILogger<ArduinoServiceHost> logger)
 	{
@@ -21,24 +22,41 @@ internal sealed class ArduinoServiceHost : IHostedService
 	{
 		var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, serviceLifetimeCTS.Token);
 		var ct = cts.Token;
-		serviceTask = new Task(async () => await ServiceTaskLoop(ct), ct, TaskCreationOptions.LongRunning);
-		serviceTask.Start();
+		serviceTask = Task.WhenAll(
+			Task.Run(async () => await EmulatorTaskLoop(ct), ct),
+			Task.Run(async () => await ServiceTaskLoop(ct), ct));
 		return Task.CompletedTask;
 	}
 
 	public async Task StopAsync(CancellationToken cancellationToken)
 	{
+		arduinoClient?.Dispose();
 		serviceLifetimeCTS.Cancel();
 		if (serviceTask != null)
-			await serviceTask;
+			await Task.WhenAny(serviceTask, Task.Delay(5000, cancellationToken));
 	}
 
 	async Task ServiceTaskLoop(CancellationToken ct)
 	{
 		while (!ct.IsCancellationRequested)
 		{
-			await Task.Delay(1000, ct);
-			await ardHubContext.Clients.All.SendAsync("ArduinoState", new ArduinoState([new("D1", 1), new("D2", 0)]), cancellationToken: ct);
+			await Task.Delay(200, ct);
+		}
+	}
+
+	async Task EmulatorTaskLoop(CancellationToken ct)
+	{
+		var a1 = 200;
+		while (!ct.IsCancellationRequested)
+		{
+			await Task.Delay(200, ct);
+			/* Эмуляция активной деятельности */
+			a1 = Math.Clamp((a1 + (int)(DateTime.Now.Ticks % 61) - 30), 0, 1024);
+			await ardHubContext.Clients.All.SendAsync("ArduinoState", new ArduinoState(true, [
+				new("D1", a1 < 300 ? 1 : 0),
+				new("D2", a1 > 800 ? 1 : 0),
+				new("A1", a1, IsAnalog: true),
+				new("A2", (int)(DateTime.Now.Ticks % 1024), IsAnalog: true)]), cancellationToken: ct);
 			//logger.LogInformation("123");
 		}
 	}

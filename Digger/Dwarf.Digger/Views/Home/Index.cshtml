@@ -8,9 +8,9 @@
 		<p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 	</div>
 *@
-<main id="v-app-root" v-cloak>
-	<div>TEST 1</div>
-	<indicator />
+<main id="v-app-root" class="text-center" v-cloak>
+	<ard-state />
+	@*<indicator />*@
 </main>
 
 <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
@@ -22,6 +22,7 @@
 	import ardConnection from 'mbase/arduino-connection.mjs'
 
 	import indicator from 'mvue-blocks/indicator.mjs'
+	import ardState from 'mvue-blocks/ard-state.mjs'
 
 	const app = createApp({
 		setup() {
@@ -29,6 +30,7 @@
 			return {}
 		},
 		components: {
+			ardState,
 			indicator
 		}
 	});
