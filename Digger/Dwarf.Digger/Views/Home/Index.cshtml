@@ -13,15 +13,19 @@
 	<indicator />
 </main>
 
+<script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
+
 <script type="module">
 	//import 'bootstrap';
 	import { createApp, ref } from 'vue'
 	import commonDirectivesPlugin from 'mbase/common-directives-plugin.mjs'
+	import ardConnection from 'mbase/arduino-connection.mjs'
 
 	import indicator from 'mvue-blocks/indicator.mjs'
 
 	const app = createApp({
 		setup() {
+			ardConnection.connect();
 			return {}
 		},
 		components: {
