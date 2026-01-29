@@ -7,5 +7,6 @@ internal sealed class Services : IServicesBatch
 	public void Configure(IServiceCollection services)
 	{
 		services.AddHostedService<ArduinoServiceHost>();
+		services.AddSingleton<ArduinoClientaccessor>();
 	}
 }

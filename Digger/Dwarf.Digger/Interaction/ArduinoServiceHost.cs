@@ -1,20 +1,23 @@
 ﻿
 using Dwarf.Digger.Interaction.Models;
 using Microsoft.AspNetCore.SignalR;
+using System.Net.NetworkInformation;
+using System.Text.RegularExpressions;
 
 namespace Dwarf.Digger.Interaction;
 
-internal sealed class ArduinoServiceHost : IHostedService
+internal sealed partial class ArduinoServiceHost : IHostedService
 {
 	private readonly CancellationTokenSource serviceLifetimeCTS = new();
 	private readonly IHubContext<ArduinoHub> ardHubContext;
+	private readonly ArduinoClientaccessor arduinoClientaccessor;
 	private readonly ILogger<ArduinoServiceHost> logger;
 	private Task? serviceTask;
-	private ArduinoClient? arduinoClient;
 
-	public ArduinoServiceHost(IHubContext<ArduinoHub> ardHubContext, ILogger<ArduinoServiceHost> logger)
+	public ArduinoServiceHost(IHubContext<ArduinoHub> ardHubContext, ArduinoClientaccessor arduinoClientaccessor, ILogger<ArduinoServiceHost> logger)
 	{
 		this.ardHubContext = ardHubContext;
+		this.arduinoClientaccessor = arduinoClientaccessor;
 		this.logger = logger;
 	}
 
@@ -22,15 +25,42 @@ internal sealed class ArduinoServiceHost : IHostedService
 	{
 		var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, serviceLifetimeCTS.Token);
 		var ct = cts.Token;
-		serviceTask = Task.WhenAll(
-			Task.Run(async () => await EmulatorTaskLoop(ct), ct),
-			Task.Run(async () => await ServiceTaskLoop(ct), ct));
+		serviceTask = Task.Run(async () => await ServiceTaskLoop(ct), ct);
+
+		arduinoClientaccessor.Connect();
+		arduinoClientaccessor.Current.OnMessageReceived += ArduinoMessageReceived;
+		arduinoClientaccessor.Current.OnConnectionChanged += ArduinoConnectionChanged;
+
+		/*
+			serviceTask = Task.WhenAll(
+				Task.Run(async () => await EmulatorTaskLoop(ct), ct),
+				Task.Run(async () => await ServiceTaskLoop(ct), ct));
+		*/
 		return Task.CompletedTask;
+	}
+
+	private void ArduinoConnectionChanged(bool connection)
+	{
+		logger.LogInformation("Arduino connection state: {connection}", connection ? "Connected" : "Disconnected");
+		if (!connection)
+			ardHubContext.Clients.All.SendAsync("ArduinoState", new ArduinoState(false, []));
+	}
+
+	private void ArduinoMessageReceived(string msg)
+	{
+		//logger.LogInformation("Arduino send: {message}", msg);
+		if (!msg.StartsWith("STATE:"))
+			return;
+		var regex = StateRegex();
+		var matches = regex.Matches(msg);
+		var pins = matches.Select(m => new { name = m.Groups["name"].Value, value = m.Groups["value"].Value })
+			.Select(r => new ArduinoPinState(r.name, int.Parse(r.value), r.name.StartsWith('A')));
+		ardHubContext.Clients.All.SendAsync("ArduinoState", new ArduinoState(true, pins.ToArray()));
 	}
 
 	public async Task StopAsync(CancellationToken cancellationToken)
 	{
-		arduinoClient?.Dispose();
+		arduinoClientaccessor.Free();
 		serviceLifetimeCTS.Cancel();
 		if (serviceTask != null)
 			await Task.WhenAny(serviceTask, Task.Delay(5000, cancellationToken));
@@ -40,7 +70,9 @@ internal sealed class ArduinoServiceHost : IHostedService
 	{
 		while (!ct.IsCancellationRequested)
 		{
-			await Task.Delay(200, ct);
+			await Task.Delay(2000, ct);
+			if (arduinoClientaccessor.Current.Connected)
+				await arduinoClientaccessor.Current.SendCommand("PING", ct);
 		}
 	}
 
@@ -60,4 +92,7 @@ internal sealed class ArduinoServiceHost : IHostedService
 			//logger.LogInformation("123");
 		}
 	}
+
+	[GeneratedRegex(@"(?<name>\w+):(?<value>\d+);")]
+	private static partial Regex StateRegex();
 }

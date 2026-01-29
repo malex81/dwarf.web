@@ -9,7 +9,15 @@ internal static class WebApplicationBuilderExtensions
 			.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
 			//.AddJsonFile($"config/appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
 			.AddEnvironmentVariables();
+
+		builder.Services.Configure(builder.Configuration);
+
 		return builder;
+	}
+
+	static void Configure(this IServiceCollection services, IConfiguration appConfig)
+	{
+		services.Configure<ArduinoConfig>(appConfig.GetSection("Arduino"));
 	}
 
 }

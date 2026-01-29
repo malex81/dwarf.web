@@ -7,6 +7,7 @@ export default {
 		const self = this;
 		const connection = new signalR.HubConnectionBuilder()
 			.withUrl("/arduino")
+			.withAutomaticReconnect()
 			.build();
 
 		connection.on("ArduinoState", (state) => {

@@ -1,4 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using Dwarf.Digger.AppConfig;
+using Microsoft.Extensions.Options;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -27,8 +29,12 @@ internal sealed class ArduinoClient : IDisposable
 
 	public void Start()
 	{
-		cts = new CancellationTokenSource();
-		_ = ConnectionLoop(cts.Token); // Запуск фонового цикла
+		lock (this)
+		{
+			if (client != null)
+				return;
+			_ = ConnectionLoop(cts.Token); // Запуск фонового цикла
+		}
 	}
 
 	private async Task ConnectionLoop(CancellationToken token)
@@ -44,6 +50,7 @@ internal sealed class ArduinoClient : IDisposable
 					await client.ConnectAsync(ip, port);
 					stream = client.GetStream();
 					OnConnectionChanged?.Invoke(true);
+					await SendCommand("PING", token);
 
 					// Запускаем чтение в отдельном потоке
 					_ = ReceiveLoop(token);
@@ -86,5 +93,26 @@ internal sealed class ArduinoClient : IDisposable
 	{
 		cts?.Cancel();
 		client?.Dispose();
+	}
+}
+
+sealed class ArduinoClientaccessor
+{
+	private readonly IOptionsMonitor<ArduinoConfig> ardConfig;
+	ArduinoClient? current;
+
+	public ArduinoClientaccessor(IOptionsMonitor<ArduinoConfig> ardConfig)
+	{
+		this.ardConfig = ardConfig;
+	}
+
+	public ArduinoClient Current => current ??= new ArduinoClient(ardConfig.CurrentValue.Ip, ardConfig.CurrentValue.Port);
+
+	public void Connect() => Current.Start();
+
+	public void Free()
+	{
+		current?.Dispose();
+		current = null;
 	}
 }
