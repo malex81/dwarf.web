@@ -21,7 +21,6 @@
 	import commonDirectivesPlugin from 'mbase/common-directives-plugin.mjs'
 	import ardConnection from 'mbase/arduino-connection.mjs'
 
-	import indicator from 'mvue-blocks/indicator.mjs'
 	import ardState from 'mvue-blocks/ard-state.mjs'
 
 	const app = createApp({
@@ -31,7 +30,6 @@
 		},
 		components: {
 			ardState,
-			indicator
 		}
 	});
 	app.use(commonDirectivesPlugin);

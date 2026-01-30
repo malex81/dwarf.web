@@ -12,6 +12,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{02EA681E
 		..\build\NUnit.Tests.targets = ..\build\NUnit.Tests.targets
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{168A54EF-34F0-4413-A2E9-95ADADF8BD99}"
+	ProjectSection(SolutionItems) = preProject
+		docs\note.md = docs\note.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

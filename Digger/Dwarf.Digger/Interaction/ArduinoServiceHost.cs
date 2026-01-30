@@ -25,11 +25,14 @@ internal sealed partial class ArduinoServiceHost : IHostedService
 	{
 		var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, serviceLifetimeCTS.Token);
 		var ct = cts.Token;
-		serviceTask = Task.Run(async () => await ServiceTaskLoop(ct), ct);
 
-		arduinoClientaccessor.Connect();
-		arduinoClientaccessor.Current.OnMessageReceived += ArduinoMessageReceived;
-		arduinoClientaccessor.Current.OnConnectionChanged += ArduinoConnectionChanged;
+		/*		arduinoClientaccessor.Connect();
+				arduinoClientaccessor.Current.OnMessageReceived += ArduinoMessageReceived;
+				arduinoClientaccessor.Current.OnConnectionChanged += ArduinoConnectionChanged;
+				serviceTask = Task.Run(async () => await ServiceTaskLoop(ct), ct);
+		*/
+
+		serviceTask = Task.Run(async () => await EmulatorTaskLoop(ct), ct);
 
 		/*
 			serviceTask = Task.WhenAll(
@@ -87,6 +90,8 @@ internal sealed partial class ArduinoServiceHost : IHostedService
 			await ardHubContext.Clients.All.SendAsync("ArduinoState", new ArduinoState(true, [
 				new("D1", a1 < 300 ? 1 : 0),
 				new("D2", a1 > 800 ? 1 : 0),
+				new("D3", 1),
+				new("D4", 0),
 				new("A1", a1, IsAnalog: true),
 				new("A2", (int)(DateTime.Now.Ticks % 1024), IsAnalog: true)]), cancellationToken: ct);
 			//logger.LogInformation("123");

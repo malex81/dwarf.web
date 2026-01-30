@@ -2,7 +2,10 @@
 	<h1 class="display-5">Пины ардуино</h1>
 	<!-- https://getbootstrap.com/docs/5.3/components/list-group/ -->
 	<ul class="list-group">
-		<li class="list-group-item" v-for="pin in pinStates">
+		<li class="list-group-item">
+			<bulb-indicator class="me-3" v-for="pin in digPins" :title="pin.name" :on="pin.value"/>
+		</li>
+		<li class="list-group-item" v-for="pin in analPins">
 			{{pin.name}} : {{pin.value}}
 		</li>
 	</ul>
